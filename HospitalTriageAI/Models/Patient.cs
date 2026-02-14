@@ -35,6 +35,8 @@ public class Patient
     
     public TriageLevel CurrentTriageLevel { get; set; } = TriageLevel.Unassessed;
     
+    public Department AssignedDepartment { get; set; } = Department.Unassigned;
+    
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     
     public DateTime? LastUpdated { get; set; }

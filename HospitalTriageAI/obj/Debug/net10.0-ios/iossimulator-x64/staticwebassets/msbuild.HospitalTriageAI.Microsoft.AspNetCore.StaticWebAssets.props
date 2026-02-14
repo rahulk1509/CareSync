@@ -12,12 +12,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>kmn8zot022</Fingerprint>
-      <Integrity>nFylSeTQ3ygyMJHNscjogfd4BGBCQqZTIkMSWaHaZLQ=</Integrity>
+      <Fingerprint>9ahg7wdpx0</Fingerprint>
+      <Integrity>f02jK74xShrCYPCWzvBZtAq8wsFZEPjzezPf6clrQu0=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>3782</FileLength>
-      <LastWriteTime>Sat, 14 Feb 2026 09:55:06 GMT</LastWriteTime>
+      <FileLength>3720</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 10:19:45 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))">
@@ -32,12 +32,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>wydq0q71o6</Fingerprint>
-      <Integrity>OCHfw1DXrP8nDpvU6wbwgD4w+9PcdicRb4uB2f5QSJk=</Integrity>
+      <Fingerprint>m543ny6jvq</Fingerprint>
+      <Integrity>NmkmJM4KTBaeTedMbRzrrLytqOicihbPN603R9U6bWE=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>6575</FileLength>
-      <LastWriteTime>Sat, 14 Feb 2026 10:12:52 GMT</LastWriteTime>
+      <FileLength>7852</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 10:19:45 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\HospitalTriageAI.styles.css'))">
@@ -52,12 +52,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ApplicationBundle</AssetTraitValue>
-      <Fingerprint>0v4qigf6zn</Fingerprint>
-      <Integrity>HJ2QV9243uwdfOZEnjzuzYj5WpyBproEbEuouRndpxM=</Integrity>
+      <Fingerprint>cg2vlyo4tw</Fingerprint>
+      <Integrity>1GQ23m0X9PvB6p59aDqiLDf5kHcBZ0KD1S/7a8vbxms=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>5439</FileLength>
-      <LastWriteTime>Sat, 14 Feb 2026 09:55:05 GMT</LastWriteTime>
+      <FileLength>4767</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 10:37:47 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\HospitalTriageAI.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))">
@@ -77,7 +77,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>1121</FileLength>
-      <LastWriteTime>Sat, 14 Feb 2026 10:11:29 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 14 Feb 2026 10:19:45 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\_framework\blazor.modules.json'))">

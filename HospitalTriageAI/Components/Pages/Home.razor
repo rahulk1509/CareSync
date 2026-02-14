@@ -1,463 +1,530 @@
 @page "/"
+@using HospitalTriageAI.Models.Enums
 @inject HospitalTriageAI.Services.IPatientService PatientService
+@inject HospitalTriageAI.Services.ITriageService TriageService
+@inject NavigationManager Navigation
 
-<div class="home-page">
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Making Health<br />Care Better<br /><span class="text-primary">Together</span></h1>
-            <p class="hero-desc">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum 
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-                non proident, sunt in culpa qui officia deserunt.
-            </p>
-            <div class="hero-cta">
-                <div class="email-input-group">
-                    <div class="email-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                    </div>
-                    <input type="email" placeholder="Your email address" class="email-input" />
-                    <a href="/intake" class="btn btn-accent">Make an Appointment</a>
-                </div>
-            </div>
+<div class="queue-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Patient Priority Queue</h1>
+            <p>Real-time triage queue sorted by severity</p>
         </div>
-        <div class="hero-cards">
-            <div class="floating-card card-recording">
-                <div class="card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="23 7 16 12 23 17 23 7"/>
-                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                    </svg>
-                </div>
-                <span>Recording Videos</span>
-            </div>
-            <div class="floating-card card-question">
-                <div class="card-header-custom">Quick question!</div>
-                <p>What should we take<br />and what we have<br />to avoid.</p>
-            </div>
-            <div class="floating-card card-profile">
-                <div class="card-header-custom">Profile</div>
-                <div class="profile-lines">
-                    <div class="line"></div>
-                    <div class="line short"></div>
-                </div>
-            </div>
-            <div class="floating-card card-patients">
-                <span class="patients-label">Smile Patients</span>
-                <div class="avatar-row">
-                    <div class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=1" alt="Patient" />
-                    </div>
-                    <div class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=2" alt="Patient" />
-                    </div>
-                    <div class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=3" alt="Patient" />
-                    </div>
-                    <div class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=4" alt="Patient" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <a href="/intake" class="btn btn-accent">+ New Patient</a>
+    </div>
 
-    <!-- Why Section -->
-    <section class="why-section">
-        <h2>Why Union Hospital?</h2>
-        <div class="features-grid">
-            <div class="feature-box">
-                <div class="feature-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </div>
-                <h3>All Specialists</h3>
-                <p>Access to comprehensive medical specialists for all your healthcare needs.</p>
+    @if (_loading)
+    {
+        <div class="loading-container">
+            <div class="spinner-lg"></div>
+            <p>Loading patient queue...</p>
+        </div>
+    }
+    else if (!_patients.Any())
+    {
+        <div class="empty-state card">
+            <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                    </svg>
-                </div>
-                <h3>All Services</h3>
-                <p>Complete healthcare services from diagnosis to treatment and follow-up care.</p>
+            <h3>No Patients in Queue</h3>
+            <p>Register a new patient to begin triage assessment</p>
+            <a href="/intake" class="btn btn-primary">Register New Patient</a>
+        </div>
+    }
+    else
+    {
+        <!-- Queue Statistics -->
+        <div class="queue-stats">
+            <div class="stat-card stat-emergency">
+                <span class="stat-count">@_patients.Count(p => p.CurrentTriageLevel == TriageLevel.Emergency)</span>
+                <span class="stat-label">Emergency</span>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                    </svg>
-                </div>
-                <h3>24/7 Available</h3>
-                <p>Round-the-clock emergency services and patient support whenever you need.</p>
+            <div class="stat-card stat-urgent">
+                <span class="stat-count">@_patients.Count(p => p.CurrentTriageLevel == TriageLevel.Urgent)</span>
+                <span class="stat-label">Urgent</span>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </div>
-                <h3>Secure & Private</h3>
-                <p>Your health data is protected with enterprise-grade security measures.</p>
+            <div class="stat-card stat-standard">
+                <span class="stat-count">@_patients.Count(p => p.CurrentTriageLevel == TriageLevel.Standard)</span>
+                <span class="stat-label">Standard</span>
+            </div>
+            <div class="stat-card stat-nonurgent">
+                <span class="stat-count">@_patients.Count(p => p.CurrentTriageLevel == TriageLevel.NonUrgent)</span>
+                <span class="stat-label">Non-Urgent</span>
+            </div>
+            <div class="stat-card stat-total">
+                <span class="stat-count">@_patients.Count</span>
+                <span class="stat-label">Total</span>
             </div>
         </div>
-    </section>
 
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="stat-card">
-            <span class="stat-value">95%</span>
-            <span class="stat-label">Patient Satisfaction</span>
+        <!-- Patient Queue List -->
+        <div class="queue-container">
+            @foreach (var patient in _patients)
+            {
+                <div class="patient-card @GetTriageClass(patient.CurrentTriageLevel)">
+                    <div class="priority-indicator">
+                        <span class="priority-number">@GetQueuePosition(patient)</span>
+                    </div>
+                    <div class="patient-main">
+                        <div class="patient-avatar">@patient.FirstName[0]@patient.LastName[0]</div>
+                        <div class="patient-details">
+                            <h3>@patient.FullName</h3>
+                            <p class="complaint">@(patient.ChiefComplaint ?? "No complaint recorded")</p>
+                            <div class="patient-meta">
+                                <span class="meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12,6 12,12 16,14"/>
+                                    </svg>
+                                    @GetWaitTime(patient)
+                                </span>
+                                <span class="meta-item">@patient.Age yrs, @patient.Gender</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="patient-status">
+                        <div class="triage-badge @GetTriageBadgeClass(patient.CurrentTriageLevel)">
+                            @GetTriageText(patient.CurrentTriageLevel)
+                        </div>
+                        <div class="department-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 21h18"/>
+                                <path d="M9 8h1"/>
+                                <path d="M9 12h1"/>
+                                <path d="M9 16h1"/>
+                                <path d="M14 8h1"/>
+                                <path d="M14 12h1"/>
+                                <path d="M14 16h1"/>
+                                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/>
+                            </svg>
+                            @GetDepartmentText(patient.AssignedDepartment)
+                        </div>
+                    </div>
+                    <div class="patient-actions">
+                        <button class="btn btn-outline btn-sm" @onclick="() => ViewEMR(patient.Id)">
+                            EMR
+                        </button>
+                        <button class="btn btn-primary btn-sm" @onclick="() => StartTriage(patient.Id)">
+                            Triage
+                        </button>
+                    </div>
+                </div>
+            }
         </div>
-        <div class="stat-card">
-            <span class="stat-value">&lt;5min</span>
-            <span class="stat-label">Average Wait Time</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">@_totalPatients+</span>
-            <span class="stat-label">Patients Served</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">24/7</span>
-            <span class="stat-label">Available</span>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <h2>Ready to Get Started?</h2>
-        <p>Begin your healthcare journey with us today.</p>
-        <a href="/intake" class="btn btn-white">Register Patient</a>
-    </section>
+    }
 </div>
 
 @code {
-    private int _totalPatients = 0;
+    private List<Patient> _patients = new();
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        _loading = true;
         try
         {
-            var patients = await PatientService.GetAllPatientsAsync();
-            _totalPatients = patients.Count();
+            var allPatients = await PatientService.GetAllPatientsAsync();
+            // Sort by triage level (Emergency first) then by creation time
+            _patients = allPatients
+                .OrderBy(p => p.CurrentTriageLevel == TriageLevel.Unassessed ? 99 : (int)p.CurrentTriageLevel)
+                .ThenBy(p => p.CreatedAt)
+                .ToList();
         }
-        catch { _totalPatients = 0; }
+        catch
+        {
+            _patients = new List<Patient>();
+        }
+        _loading = false;
+    }
+
+    private int GetQueuePosition(Patient patient)
+    {
+        return _patients.IndexOf(patient) + 1;
+    }
+
+    private string GetWaitTime(Patient patient)
+    {
+        var elapsed = DateTime.Now - patient.CreatedAt;
+        if (elapsed.TotalMinutes < 1) return "Just now";
+        if (elapsed.TotalMinutes < 60) return $"{(int)elapsed.TotalMinutes} min";
+        if (elapsed.TotalHours < 24) return $"{(int)elapsed.TotalHours}h {elapsed.Minutes}m";
+        return $"{(int)elapsed.TotalDays}d ago";
+    }
+
+    private string GetTriageClass(TriageLevel level) => level switch
+    {
+        TriageLevel.Emergency => "triage-emergency",
+        TriageLevel.Urgent => "triage-urgent",
+        TriageLevel.Standard => "triage-standard",
+        TriageLevel.NonUrgent => "triage-nonurgent",
+        _ => "triage-unassessed"
+    };
+
+    private string GetTriageBadgeClass(TriageLevel level) => level switch
+    {
+        TriageLevel.Emergency => "badge-emergency",
+        TriageLevel.Urgent => "badge-urgent",
+        TriageLevel.Standard => "badge-standard",
+        TriageLevel.NonUrgent => "badge-nonurgent",
+        _ => "badge-unassessed"
+    };
+
+    private string GetTriageText(TriageLevel level) => level switch
+    {
+        TriageLevel.Emergency => "EMERGENCY",
+        TriageLevel.Urgent => "URGENT",
+        TriageLevel.Standard => "STANDARD",
+        TriageLevel.NonUrgent => "NON-URGENT",
+        _ => "PENDING"
+    };
+
+    private string GetDepartmentText(Department dept) => dept switch
+    {
+        Department.Cardiology => "Cardiology",
+        Department.Pulmonology => "Pulmonology",
+        Department.Neurology => "Neurology",
+        Department.Surgery => "Surgery",
+        Department.Orthopedics => "Orthopedics",
+        Department.GeneralMedicine => "General Medicine",
+        Department.InfectiousDisease => "Infectious Disease",
+        Department.EmergencyTrauma => "Emergency/Trauma",
+        Department.PainManagement => "Pain Management",
+        _ => "Not Assigned"
+    };
+
+    private void ViewEMR(int id)
+    {
+        Navigation.NavigateTo($"/emr/{id}");
+    }
+
+    private void StartTriage(int id)
+    {
+        Navigation.NavigateTo($"/triage/{id}");
     }
 }
 
 <style>
-    .home-page {
+    .queue-page {
         display: flex;
         flex-direction: column;
-        gap: var(--space-12);
-    }
-
-    /* Hero */
-    .hero {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-8);
-        align-items: center;
-        padding: var(--space-8) 0;
-    }
-
-    .hero h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        line-height: 1.15;
-        margin-bottom: var(--space-6);
-        color: var(--gray-900);
-    }
-
-    .hero-desc {
-        font-size: 1rem;
-        color: var(--gray-500);
-        margin-bottom: var(--space-8);
-        line-height: 1.7;
-    }
-
-    .email-input-group {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        max-width: 500px;
-        background: var(--white);
-        border: 2px solid var(--gray-200);
-        border-radius: var(--radius-md);
-        padding: var(--space-2);
-        padding-left: var(--space-4);
-    }
-
-    .email-icon {
-        color: var(--gray-400);
-        display: flex;
-        align-items: center;
-        margin-right: var(--space-2);
-    }
-
-    .email-input {
-        flex: 1;
-        padding: var(--space-2);
-        border: none;
-        font-size: 0.9375rem;
-        background: transparent;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .email-input:focus {
-        outline: none;
-    }
-
-    .email-input::placeholder {
-        color: var(--gray-400);
-    }
-
-    /* Floating Cards - Union Hospital Style */
-    .hero-cards {
-        position: relative;
-        height: 400px;
-    }
-
-    .floating-card {
-        position: absolute;
-        background: var(--white);
-        border: 2px solid var(--primary-border);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-card);
-    }
-
-    .card-header-custom {
-        background: var(--accent);
-        color: var(--white);
-        padding: var(--space-2) var(--space-4);
-        font-weight: 600;
-        font-size: 0.875rem;
-    }
-
-    .card-recording {
-        top: 80px;
-        left: 30px;
-        padding: var(--space-3) var(--space-4);
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        background: var(--accent);
-        color: var(--white);
-        border-color: var(--accent);
-    }
-
-    .card-recording .card-icon {
-        display: flex;
-    }
-
-    .card-question {
-        top: 20px;
-        right: 20px;
-        width: 220px;
-    }
-
-    .card-question p {
-        padding: var(--space-4);
-        margin: 0;
-        font-size: 0.875rem;
-        color: var(--gray-700);
-        line-height: 1.5;
-    }
-
-    .card-profile {
-        top: 180px;
-        left: 60px;
-        width: 180px;
-    }
-
-    .profile-lines {
-        padding: var(--space-4);
-    }
-
-    .profile-lines .line {
-        height: 10px;
-        background: var(--primary-light);
-        border-radius: 5px;
-        margin-bottom: var(--space-2);
-    }
-
-    .profile-lines .line.short {
-        width: 60%;
-    }
-
-    .card-patients {
-        bottom: 30px;
-        right: 40px;
-        padding: var(--space-4);
-        background: var(--accent);
-        border-color: var(--accent);
-    }
-
-    .patients-label {
-        display: block;
-        color: var(--white);
-        font-size: 0.75rem;
-        font-weight: 500;
-        margin-bottom: var(--space-3);
-    }
-
-    .avatar-row {
-        display: flex;
-        gap: -8px;
-    }
-
-    .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 2px solid var(--white);
-        margin-left: -8px;
-    }
-
-    .avatar:first-child {
-        margin-left: 0;
-    }
-
-    .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Why Section - Union Hospital Style */
-    .why-section {
-        background: var(--primary);
-        color: var(--white);
-        padding: var(--space-12) var(--space-8);
-        border-radius: var(--radius-xl);
-        margin: 0 calc(var(--space-6) * -1);
-    }
-
-    .why-section h2 {
-        color: var(--white);
-        text-align: center;
-        margin-bottom: var(--space-8);
-        font-size: 2rem;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
         gap: var(--space-6);
+        padding-bottom: var(--space-8);
     }
 
-    .feature-box {
-        background: rgba(255,255,255,0.15);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        transition: background 0.2s ease;
-    }
-
-    .feature-box:hover {
-        background: rgba(255,255,255,0.2);
-    }
-
-    .feature-icon {
-        width: 48px;
-        height: 48px;
-        background: var(--white);
-        color: var(--primary);
-        border-radius: var(--radius-md);
+    .page-header {
         display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-4) 0;
+        border-bottom: 2px solid var(--primary-border);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.75rem;
+    }
+
+    .page-header p {
+        margin: var(--space-1) 0 0;
+        color: var(--gray-500);
+        font-size: 0.9375rem;
+    }
+
+    /* Loading & Empty States */
+    .loading-container {
+        display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        padding: var(--space-16);
+        color: var(--gray-500);
+    }
+
+    .spinner-lg {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--gray-200);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
         margin-bottom: var(--space-4);
     }
 
-    .feature-box h3 {
-        color: var(--white);
-        font-size: 1.125rem;
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: var(--space-12);
+    }
+
+    .empty-icon {
+        color: var(--gray-300);
+        margin-bottom: var(--space-4);
+    }
+
+    .empty-state h3 {
         margin-bottom: var(--space-2);
     }
 
-    .feature-box p {
-        color: rgba(255,255,255,0.85);
-        font-size: 0.875rem;
-        line-height: 1.5;
-        margin: 0;
+    .empty-state p {
+        color: var(--gray-500);
+        margin-bottom: var(--space-6);
     }
 
-    /* Stats */
-    .stats-section {
+    /* Queue Statistics */
+    .queue-stats {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: var(--space-6);
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--space-4);
     }
 
     .stat-card {
         background: var(--white);
-        border: 2px solid var(--primary-border);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-md);
+        padding: var(--space-4);
         text-align: center;
-        box-shadow: var(--shadow-card);
-        transition: transform 0.2s ease;
+        transition: transform 0.2s;
     }
 
     .stat-card:hover {
         transform: translateY(-2px);
     }
 
-    .stat-value {
+    .stat-count {
         display: block;
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 700;
-        color: var(--primary);
     }
 
     .stat-label {
+        font-size: 0.8125rem;
         color: var(--gray-500);
+    }
+
+    .stat-emergency { border-color: #dc2626; }
+    .stat-emergency .stat-count { color: #dc2626; }
+
+    .stat-urgent { border-color: #f59e0b; }
+    .stat-urgent .stat-count { color: #f59e0b; }
+
+    .stat-standard { border-color: #3b82f6; }
+    .stat-standard .stat-count { color: #3b82f6; }
+
+    .stat-nonurgent { border-color: #22c55e; }
+    .stat-nonurgent .stat-count { color: #22c55e; }
+
+    .stat-total { border-color: var(--primary); }
+    .stat-total .stat-count { color: var(--primary); }
+
+    /* Patient Queue */
+    .queue-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .patient-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        background: var(--white);
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        transition: all 0.2s;
+    }
+
+    .patient-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateX(4px);
+    }
+
+    /* Triage Level Borders */
+    .triage-emergency { border-left: 5px solid #dc2626; }
+    .triage-urgent { border-left: 5px solid #f59e0b; }
+    .triage-standard { border-left: 5px solid #3b82f6; }
+    .triage-nonurgent { border-left: 5px solid #22c55e; }
+    .triage-unassessed { border-left: 5px solid var(--gray-300); }
+
+    /* Priority Indicator */
+    .priority-indicator {
+        min-width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .priority-number {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--gray-600);
+    }
+
+    .triage-emergency .priority-indicator { background: #fef2f2; }
+    .triage-emergency .priority-number { color: #dc2626; }
+
+    .triage-urgent .priority-indicator { background: #fffbeb; }
+    .triage-urgent .priority-number { color: #f59e0b; }
+
+    /* Patient Main Info */
+    .patient-main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+    }
+
+    .patient-avatar {
+        width: 48px;
+        height: 48px;
+        background: var(--primary);
+        color: var(--white);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9375rem;
+    }
+
+    .patient-details h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .complaint {
+        margin: var(--space-1) 0;
         font-size: 0.875rem;
+        color: var(--gray-600);
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    /* CTA */
-    .cta-section {
-        background: var(--accent);
-        color: var(--white);
-        padding: var(--space-12);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        margin: 0 calc(var(--space-6) * -1);
+    .patient-meta {
+        display: flex;
+        gap: var(--space-4);
+        font-size: 0.8125rem;
+        color: var(--gray-500);
     }
 
-    .cta-section h2 {
-        color: var(--white);
-        margin-bottom: var(--space-2);
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
     }
 
-    .cta-section p {
-        color: rgba(255,255,255,0.9);
-        margin-bottom: var(--space-6);
+    /* Patient Status */
+    .patient-status {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: var(--space-2);
+        min-width: 150px;
     }
 
+    .triage-badge {
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-emergency { background: #fef2f2; color: #dc2626; }
+    .badge-urgent { background: #fffbeb; color: #d97706; }
+    .badge-standard { background: #eff6ff; color: #2563eb; }
+    .badge-nonurgent { background: #f0fdf4; color: #16a34a; }
+    .badge-unassessed { background: var(--gray-100); color: var(--gray-500); }
+
+    .department-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        font-size: 0.8125rem;
+        color: var(--gray-600);
+        padding: var(--space-1) var(--space-2);
+        background: var(--gray-50);
+        border-radius: var(--radius-sm);
+    }
+
+    /* Patient Actions */
+    .patient-actions {
+        display: flex;
+        gap: var(--space-2);
+    }
+
+    .btn-sm {
+        padding: var(--space-2) var(--space-4);
+        font-size: 0.8125rem;
+    }
+
+    /* Responsive */
     @@media (max-width: 1024px) {
-        .hero { grid-template-columns: 1fr; }
-        .hero-cards { display: none; }
-        .features-grid { grid-template-columns: repeat(2, 1fr); }
-        .stats-section { grid-template-columns: repeat(2, 1fr); }
+        .queue-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .patient-card {
+            flex-wrap: wrap;
+        }
+
+        .patient-status {
+            flex-direction: row;
+            min-width: auto;
+        }
     }
 
     @@media (max-width: 640px) {
-        .hero h1 { font-size: 2rem; }
-        .email-input-group { flex-direction: column; border-radius: var(--radius-lg); }
-        .email-input-group .btn { width: 100%; margin-top: var(--space-2); }
-        .features-grid { grid-template-columns: 1fr; }
-        .stats-section { grid-template-columns: 1fr; }
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--space-4);
+        }
+
+        .queue-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .patient-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .patient-main {
+            width: 100%;
+        }
+
+        .patient-status {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .patient-actions {
+            width: 100%;
+        }
+
+        .patient-actions .btn {
+            flex: 1;
+        }
     }
 </style>

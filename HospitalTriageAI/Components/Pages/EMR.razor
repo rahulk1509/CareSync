@@ -1,0 +1,724 @@
+@page "/emr/{PatientId:int}"
+@inject IPatientService PatientService
+@inject ITriageService TriageService
+@inject NavigationManager Navigation
+
+<div class="emr-page">
+    @if (_loading)
+    {
+        <div class="loading-container">
+            <div class="spinner-lg"></div>
+            <p>Loading medical record...</p>
+        </div>
+    }
+    else if (_patient == null)
+    {
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>Patient Not Found</h3>
+                <p>The requested patient record could not be found.</p>
+                <a href="/" class="btn btn-primary">Back to Queue</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Header -->
+        <div class="emr-header">
+            <div class="header-left">
+                <button class="btn btn-outline" @onclick="GoBack">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back
+                </button>
+                <h1>Electronic Medical Record</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" @onclick="StartTriage">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    Start Triage
+                </button>
+            </div>
+        </div>
+
+        <!-- Patient Banner -->
+        <div class="patient-banner">
+            <div class="patient-avatar-lg">@_patient.FirstName[0]@_patient.LastName[0]</div>
+            <div class="patient-info">
+                <h2>@_patient.FullName</h2>
+                <div class="patient-meta-row">
+                    <span class="meta-badge">MRN: @(_patient.MedicalRecordNumber ?? "N/A")</span>
+                    <span class="meta-badge">@_patient.Age years old</span>
+                    <span class="meta-badge">@_patient.Gender</span>
+                    <span class="meta-badge">DOB: @_patient.DateOfBirth.ToString("MMM dd, yyyy")</span>
+                </div>
+            </div>
+            <div class="patient-status-banner">
+                <div class="triage-badge-lg @GetTriageBadgeClass(_patient.CurrentTriageLevel)">
+                    @GetTriageText(_patient.CurrentTriageLevel)
+                </div>
+                <div class="department-text">@GetDepartmentText(_patient.AssignedDepartment)</div>
+            </div>
+        </div>
+
+        <div class="emr-content">
+            <!-- Left Column -->
+            <div class="emr-column">
+                <!-- Chief Complaint -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        Chief Complaint
+                    </div>
+                    <div class="card-body">
+                        <p class="complaint-text">@(_patient.ChiefComplaint ?? "No complaint recorded")</p>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        Contact Information
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">@(_patient.PhoneNumber ?? "Not provided")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical History -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                        Medical History
+                    </div>
+                    <div class="card-body">
+                        <p>@(string.IsNullOrEmpty(_patient.MedicalHistory) ? "No medical history recorded" : _patient.MedicalHistory)</p>
+                    </div>
+                </div>
+
+                <!-- Allergies -->
+                <div class="card allergy-card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        Allergies
+                    </div>
+                    <div class="card-body">
+                        @if (string.IsNullOrEmpty(_patient.Allergies))
+                        {
+                            <span class="no-allergies">No known allergies (NKA)</span>
+                        }
+                        else
+                        {
+                            <span class="allergy-text">@_patient.Allergies</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Current Medications -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19.5 12.5L12 20l-7.5-7.5a5.5 5.5 0 1 1 7.78-7.78L12 5.5l.72-.78a5.5 5.5 0 1 1 7.78 7.78z"/>
+                        </svg>
+                        Current Medications
+                    </div>
+                    <div class="card-body">
+                        <p>@(string.IsNullOrEmpty(_patient.CurrentMedications) ? "No current medications" : _patient.CurrentMedications)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="emr-column">
+                <!-- Latest Vitals -->
+                @if (_latestAssessment != null)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            Latest Vital Signs
+                            <span class="vitals-time">@_latestAssessment.AssessedAt.ToString("MMM dd, HH:mm")</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="vitals-grid">
+                                <div class="vital-item">
+                                    <span class="vital-label">Heart Rate</span>
+                                    <span class="vital-value @GetVitalClass(_latestAssessment.HeartRate, 60, 100)">@_latestAssessment.HeartRate <small>bpm</small></span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Blood Pressure</span>
+                                    <span class="vital-value">@_latestAssessment.BloodPressureSystolic/@_latestAssessment.BloodPressureDiastolic <small>mmHg</small></span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Temperature</span>
+                                    <span class="vital-value @GetVitalClass(_latestAssessment.Temperature, 36.1f, 37.2f)">@_latestAssessment.Temperature.ToString("F1") <small>°C</small></span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Respiratory Rate</span>
+                                    <span class="vital-value @GetVitalClass(_latestAssessment.RespiratoryRate, 12, 20)">@_latestAssessment.RespiratoryRate <small>/min</small></span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">O2 Saturation</span>
+                                    <span class="vital-value @(_latestAssessment.OxygenSaturation < 95 ? "vital-warning" : "")">@_latestAssessment.OxygenSaturation <small>%</small></span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Pain Level</span>
+                                    <span class="vital-value @(_latestAssessment.PainLevel >= 7 ? "vital-warning" : "")">@_latestAssessment.PainLevel <small>/10</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Risk Assessment -->
+                    <div class="card risk-card">
+                        <div class="card-header">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            AI Risk Assessment
+                        </div>
+                        <div class="card-body">
+                            <div class="risk-score">
+                                <span class="score-value">@((_latestAssessment.AiRiskScore ?? 0) * 100)%</span>
+                                <span class="score-label">Risk Score</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            Vital Signs
+                        </div>
+                        <div class="card-body text-center">
+                            <p class="no-data">No vital signs recorded yet</p>
+                            <button class="btn btn-primary btn-sm" @onclick="StartTriage">Record Vitals</button>
+                        </div>
+                    </div>
+                }
+
+                <!-- Assessment History -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        Assessment History
+                    </div>
+                    <div class="card-body">
+                        @if (_assessments.Any())
+                        {
+                            <div class="assessment-list">
+                                @foreach (var assessment in _assessments)
+                                {
+                                    <div class="assessment-item">
+                                        <div class="assessment-date">@assessment.AssessedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                                        <div class="assessment-details">
+                                            <span class="triage-badge-sm @GetTriageBadgeClass(assessment.AssignedLevel)">@GetTriageText(assessment.AssignedLevel)</span>
+                                            <span class="assessment-score">Risk: @((assessment.AiRiskScore ?? 0) * 100)%</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="no-data">No assessments recorded</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="2" x2="12" y2="22"/>
+                            <circle cx="12" cy="6" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="18" r="2"/>
+                        </svg>
+                        Patient Timeline
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-time">@_patient.CreatedAt.ToString("MMM dd, HH:mm")</span>
+                                    <span class="timeline-event">Patient registered</span>
+                                </div>
+                            </div>
+                            @foreach (var assessment in _assessments.OrderBy(a => a.AssessedAt))
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <span class="timeline-time">@assessment.AssessedAt.ToString("MMM dd, HH:mm")</span>
+                                        <span class="timeline-event">Triage assessment - @GetTriageText(assessment.AssignedLevel)</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int PatientId { get; set; }
+
+    private Patient? _patient;
+    private List<Models.TriageAssessment> _assessments = new();
+    private Models.TriageAssessment? _latestAssessment;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatientData();
+    }
+
+    private async Task LoadPatientData()
+    {
+        _loading = true;
+        try
+        {
+            _patient = await PatientService.GetPatientAsync(PatientId);
+            if (_patient != null)
+            {
+                _assessments = await TriageService.GetPatientAssessmentsAsync(PatientId);
+                _latestAssessment = _assessments.FirstOrDefault();
+            }
+        }
+        catch { }
+        _loading = false;
+    }
+
+    private void GoBack() => Navigation.NavigateTo("/");
+    
+    private void StartTriage() => Navigation.NavigateTo($"/triage/{PatientId}");
+
+    private string GetTriageBadgeClass(TriageLevel level) => level switch
+    {
+        TriageLevel.Emergency => "badge-emergency",
+        TriageLevel.Urgent => "badge-urgent",
+        TriageLevel.Standard => "badge-standard",
+        TriageLevel.NonUrgent => "badge-nonurgent",
+        _ => "badge-unassessed"
+    };
+
+    private string GetTriageText(TriageLevel level) => level switch
+    {
+        TriageLevel.Emergency => "EMERGENCY",
+        TriageLevel.Urgent => "URGENT",
+        TriageLevel.Standard => "STANDARD",
+        TriageLevel.NonUrgent => "NON-URGENT",
+        _ => "PENDING"
+    };
+
+    private string GetDepartmentText(Department dept) => dept switch
+    {
+        Department.Cardiology => "Cardiology",
+        Department.Pulmonology => "Pulmonology",
+        Department.Neurology => "Neurology",
+        Department.Surgery => "Surgery",
+        Department.Orthopedics => "Orthopedics",
+        Department.GeneralMedicine => "General Medicine",
+        Department.InfectiousDisease => "Infectious Disease",
+        Department.EmergencyTrauma => "Emergency/Trauma",
+        Department.PainManagement => "Pain Management",
+        _ => "Not Assigned"
+    };
+
+    private string GetVitalClass(float value, float min, float max) =>
+        (value < min || value > max) ? "vital-warning" : "";
+}
+
+<style>
+    .emr-page {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-6);
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-16);
+        color: var(--gray-500);
+    }
+
+    .spinner-lg {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--gray-200);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: var(--space-4);
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Header */
+    .emr-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+    }
+
+    .header-left h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* Patient Banner */
+    .patient-banner {
+        display: flex;
+        align-items: center;
+        gap: var(--space-6);
+        background: var(--white);
+        border: 2px solid var(--primary);
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+    }
+
+    .patient-avatar-lg {
+        width: 72px;
+        height: 72px;
+        background: var(--primary);
+        color: var(--white);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .patient-info {
+        flex: 1;
+    }
+
+    .patient-info h2 {
+        margin: 0 0 var(--space-2);
+        font-size: 1.5rem;
+    }
+
+    .patient-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    .meta-badge {
+        padding: var(--space-1) var(--space-3);
+        background: var(--gray-100);
+        border-radius: var(--radius-full);
+        font-size: 0.8125rem;
+        color: var(--gray-600);
+    }
+
+    .patient-status-banner {
+        text-align: center;
+    }
+
+    .triage-badge-lg {
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-md);
+        font-size: 0.875rem;
+        font-weight: 700;
+        margin-bottom: var(--space-2);
+    }
+
+    .department-text {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+
+    /* EMR Content */
+    .emr-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-6);
+    }
+
+    .emr-column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    /* Cards */
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+
+    .card-header svg {
+        flex-shrink: 0;
+    }
+
+    .complaint-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .info-row {
+        display: flex;
+        gap: var(--space-3);
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: var(--gray-500);
+    }
+
+    .info-value {
+        color: var(--gray-800);
+    }
+
+    /* Allergies */
+    .allergy-card .card-header {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .no-allergies {
+        color: var(--success);
+        font-weight: 500;
+    }
+
+    .allergy-text {
+        color: #dc2626;
+        font-weight: 500;
+    }
+
+    /* Vitals */
+    .vitals-time {
+        margin-left: auto;
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.8;
+    }
+
+    .vitals-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-4);
+    }
+
+    .vital-item {
+        text-align: center;
+        padding: var(--space-3);
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+    }
+
+    .vital-label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        margin-bottom: var(--space-1);
+    }
+
+    .vital-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .vital-value small {
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: var(--gray-500);
+    }
+
+    .vital-warning {
+        color: #dc2626;
+    }
+
+    /* Risk Card */
+    .risk-score {
+        text-align: center;
+        padding: var(--space-4);
+    }
+
+    .score-value {
+        display: block;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .score-label {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+    }
+
+    /* Assessment List */
+    .assessment-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .assessment-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-3);
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+    }
+
+    .assessment-date {
+        font-size: 0.8125rem;
+        color: var(--gray-600);
+    }
+
+    .assessment-details {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .triage-badge-sm {
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-full);
+        font-size: 0.625rem;
+        font-weight: 700;
+    }
+
+    .assessment-score {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    /* Triage Badges */
+    .badge-emergency { background: #fef2f2; color: #dc2626; }
+    .badge-urgent { background: #fffbeb; color: #d97706; }
+    .badge-standard { background: #eff6ff; color: #2563eb; }
+    .badge-nonurgent { background: #f0fdf4; color: #16a34a; }
+    .badge-unassessed { background: var(--gray-100); color: var(--gray-500); }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: var(--space-6);
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--gray-200);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: var(--space-4);
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: calc(-1 * var(--space-6) + 2px);
+        width: 10px;
+        height: 10px;
+        background: var(--primary);
+        border-radius: 50%;
+        top: 4px;
+    }
+
+    .timeline-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+    }
+
+    .timeline-time {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    .timeline-event {
+        font-size: 0.875rem;
+        color: var(--gray-700);
+    }
+
+    .no-data {
+        color: var(--gray-400);
+        text-align: center;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .emr-content {
+            grid-template-columns: 1fr;
+        }
+
+        .patient-banner {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .patient-meta-row {
+            justify-content: center;
+        }
+
+        .vitals-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>

@@ -7,24 +7,18 @@
             <a href="/" class="navbar-brand">
                 <div class="brand-icon">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <rect width="24" height="24" rx="4" fill="#E5754B"/>
+                        <rect width="24" height="24" rx="4" fill="#4EBDB8"/>
                         <path d="M12 6v12M6 12h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
                     </svg>
                 </div>
                 <div class="brand-text">
-                    <span class="brand-name">UNION</span>
-                    <span class="brand-tagline">Hospital</span>
+                    <span class="brand-name">CareSync</span>
                 </div>
             </a>
             
             <div class="navbar-links">
-                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Our Doctors</NavLink>
-                <NavLink class="nav-link" href="intake">Services</NavLink>
-                <NavLink class="nav-link" href="triage">Our Price</NavLink>
-                <NavLink class="nav-link" href="#">Reviews</NavLink>
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Patients</NavLink>
             </div>
-            
-            <a href="/intake" class="btn btn-accent">Contact Us</a>
         </div>
     </nav>
 
@@ -38,7 +32,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
-            <p>&copy; 2026 Union Hospital. Making Health Care Better Together.</p>
+            <p>&copy; 2026 CareSync. Intelligent Hospital Triage System.</p>
         </div>
     </footer>
 </div>
@@ -65,7 +59,8 @@
         padding: var(--space-4) var(--space-6);
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
+        position: relative;
     }
 
     .navbar-brand {
@@ -73,6 +68,14 @@
         align-items: center;
         gap: var(--space-3);
         text-decoration: none;
+        position: absolute;
+        left: var(--space-6);
+    }
+
+    .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: var(--space-8);
     }
 
     .brand-icon {

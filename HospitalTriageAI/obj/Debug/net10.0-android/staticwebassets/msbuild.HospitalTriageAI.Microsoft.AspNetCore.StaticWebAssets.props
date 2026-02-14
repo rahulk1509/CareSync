@@ -72,12 +72,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>1ntxqb650k</Fingerprint>
-      <Integrity>TRpJhwY3BP8/xBFSdMnqXntQ5DZbesdAhbYyCA8uBoc=</Integrity>
+      <Fingerprint>3kmak1gwk2</Fingerprint>
+      <Integrity>TTcYl/E5B7mDYaU7T3UETtQEHQqVfgofxJDTOemNjBU=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>1121</FileLength>
-      <LastWriteTime>Sat, 14 Feb 2026 10:19:45 GMT</LastWriteTime>
+      <FileLength>1134</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 11:10:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\_framework\blazor.modules.json'))">

@@ -118,7 +118,11 @@
         }
         catch (Exception ex)
         {
-            _error = $"Error saving patient: {ex.Message}";
+            // Get the innermost exception for better error details
+            var innerEx = ex;
+            while (innerEx.InnerException != null)
+                innerEx = innerEx.InnerException;
+            _error = $"Error saving patient: {innerEx.Message}";
         }
         finally
         {
