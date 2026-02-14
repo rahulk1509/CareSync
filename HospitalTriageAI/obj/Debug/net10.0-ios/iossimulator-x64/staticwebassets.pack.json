@@ -1,0 +1,49 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\mutha\\.nuget\\packages\\microsoft.aspnetcore.components.webview\\10.0.0\\staticwebassets\\blazor.modules.json",
+      "PackagePath": "staticwebassets\\_framework\\blazor.modules.json"
+    },
+    {
+      "Id": "C:\\Users\\mutha\\.nuget\\packages\\microsoft.aspnetcore.components.webview\\10.0.0\\staticwebassets\\blazor.webview.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webview.js"
+    },
+    {
+      "Id": "C:\\Users\\mutha\\OneDrive\\Desktop\\repository destination\\CareSync\\HospitalTriageAI\\obj\\Debug\\net10.0-ios\\iossimulator-x64\\scopedcss\\bundle\\HospitalTriageAI.styles.css",
+      "PackagePath": "staticwebassets\\HospitalTriageAI.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\mutha\\OneDrive\\Desktop\\repository destination\\CareSync\\HospitalTriageAI\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\mutha\\OneDrive\\Desktop\\repository destination\\CareSync\\HospitalTriageAI\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\mutha\\OneDrive\\Desktop\\repository destination\\CareSync\\HospitalTriageAI\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.HospitalTriageAI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.HospitalTriageAI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.build.HospitalTriageAI.props",
+      "PackagePath": "build\\HospitalTriageAI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.buildMultiTargeting.HospitalTriageAI.props",
+      "PackagePath": "buildMultiTargeting\\HospitalTriageAI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.buildTransitive.HospitalTriageAI.props",
+      "PackagePath": "buildTransitive\\HospitalTriageAI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

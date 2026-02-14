@@ -1,0 +1,80 @@
+@using HospitalTriageAI.Models.Enums
+
+<span class="risk-badge @GetLevelClass()">
+    @GetLevelText()
+</span>
+
+@code {
+    [Parameter]
+    public TriageLevel Level { get; set; }
+    
+    [Parameter]
+    public bool Compact { get; set; } = false;
+
+    private string GetLevelClass() => Level switch
+    {
+        TriageLevel.Emergency => "emergency",
+        TriageLevel.Urgent => "urgent",
+        TriageLevel.Standard => "standard",
+        TriageLevel.NonUrgent => "non-urgent",
+        _ => "unassessed"
+    };
+
+    private string GetLevelText()
+    {
+        if (Compact)
+        {
+            return Level switch
+            {
+                TriageLevel.Emergency => "E",
+                TriageLevel.Urgent => "U",
+                TriageLevel.Standard => "S",
+                TriageLevel.NonUrgent => "N",
+                _ => "?"
+            };
+        }
+        
+        return Level.ToString();
+    }
+}
+
+<style>
+    .risk-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .risk-badge.emergency {
+        background-color: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .risk-badge.urgent {
+        background-color: #fff7ed;
+        color: #ea580c;
+        border: 1px solid #fed7aa;
+    }
+
+    .risk-badge.standard {
+        background-color: #fefce8;
+        color: #ca8a04;
+        border: 1px solid #fef08a;
+    }
+
+    .risk-badge.non-urgent {
+        background-color: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+
+    .risk-badge.unassessed {
+        background-color: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+</style>

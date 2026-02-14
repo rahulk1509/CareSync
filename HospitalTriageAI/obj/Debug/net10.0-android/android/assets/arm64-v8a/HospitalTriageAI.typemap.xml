@@ -1,0 +1,10 @@
+<api type="debug" assembly-name="HospitalTriageAI" mvid="cee53bba06d24ad19a0f3fc5e16dcb90">
+  <java-to-managed>
+    <entry java-name="crc64c20f41a49ec28b65/MainActivity" managed-name="HospitalTriageAI.MainActivity, HospitalTriageAI" managed-type-token-id="33554442" />
+    <entry java-name="crc64c20f41a49ec28b65/MainApplication" managed-name="HospitalTriageAI.MainApplication, HospitalTriageAI" managed-type-token-id="33554443" />
+  </java-to-managed>
+  <managed-to-java>
+    <entry java-name="crc64c20f41a49ec28b65/MainActivity" managed-name="HospitalTriageAI.MainActivity, HospitalTriageAI" managed-type-token-id="33554442" />
+    <entry java-name="crc64c20f41a49ec28b65/MainApplication" managed-name="HospitalTriageAI.MainApplication, HospitalTriageAI" managed-type-token-id="33554443" />
+  </managed-to-java>
+</api>

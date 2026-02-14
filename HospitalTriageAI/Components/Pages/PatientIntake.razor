@@ -1,0 +1,182 @@
+@page "/intake"
+@inject IPatientService PatientService
+@inject NavigationManager Navigation
+
+<div class="intake-page">
+    <div class="page-header">
+        <h1>Patient Intake</h1>
+        <p>Register patient information for AI triage assessment</p>
+    </div>
+
+    <EditForm Model="@_patient" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <!-- Personal Information -->
+        <div class="card form-card">
+            <div class="card-header">Personal Information</div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">First Name *</label>
+                        <InputText @bind-Value="_patient.FirstName" class="form-input" placeholder="Enter first name" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name *</label>
+                        <InputText @bind-Value="_patient.LastName" class="form-input" placeholder="Enter last name" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth *</label>
+                        <InputDate @bind-Value="_patient.DateOfBirth" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <InputSelect @bind-Value="_patient.Gender" class="form-input">
+                            <option value="">Select gender...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <InputText @bind-Value="_patient.PhoneNumber" class="form-input" placeholder="(555) 123-4567" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Chief Complaint -->
+        <div class="card form-card">
+            <div class="card-header">Chief Complaint</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">What brings you in today? *</label>
+                    <InputTextArea @bind-Value="_patient.ChiefComplaint" class="form-input" rows="4" 
+                        placeholder="Describe symptoms, pain, concerns, or reason for visit..." />
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical History -->
+        <div class="card form-card">
+            <div class="card-header">Medical History</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Existing Medical Conditions</label>
+                    <InputTextArea @bind-Value="_patient.MedicalHistory" class="form-input" rows="2" 
+                        placeholder="Diabetes, hypertension, heart disease, etc." />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Known Allergies</label>
+                    <InputTextArea @bind-Value="_patient.Allergies" class="form-input" rows="2" 
+                        placeholder="Penicillin, peanuts, latex, etc." />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Current Medications</label>
+                    <InputTextArea @bind-Value="_patient.CurrentMedications" class="form-input" rows="2" 
+                        placeholder="List medications with dosages if known..." />
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="alert alert-danger">@_error</div>
+        }
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-outline" @onclick="Cancel">Cancel</button>
+            <button type="submit" class="btn btn-accent" disabled="@_saving">
+                @if (_saving)
+                {
+                    <span class="spinner"></span>
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>Continue to Triage</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private Patient _patient = new() { DateOfBirth = DateTime.Today.AddYears(-30) };
+    private bool _saving = false;
+    private string? _error;
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        _error = null;
+        
+        try
+        {
+            var saved = await PatientService.CreatePatientAsync(_patient);
+            Navigation.NavigateTo($"/triage/{saved.Id}");
+        }
+        catch (Exception ex)
+        {
+            _error = $"Error saving patient: {ex.Message}";
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel() => Navigation.NavigateTo("/");
+}
+
+<style>
+    .intake-page {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        margin-bottom: var(--space-8);
+    }
+
+    .page-header h1 {
+        margin-bottom: var(--space-2);
+    }
+
+    .page-header p {
+        color: var(--gray-500);
+        margin: 0;
+    }
+
+    .form-card {
+        margin-bottom: var(--space-6);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-3);
+        padding-top: var(--space-4);
+    }
+
+    @@media (max-width: 640px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
