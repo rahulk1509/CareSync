@@ -1,0 +1,348 @@
+@page "/"
+@inject HospitalTriageAI.Services.IPatientService PatientService
+
+<div class="home-page">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Making Healthcare<br />Triage <span class="text-primary">Smarter</span></h1>
+            <p class="hero-desc">
+                Advanced AI-powered patient prioritization system. 
+                Fast assessments, accurate risk scoring, better outcomes.
+            </p>
+            <div class="hero-cta">
+                <div class="email-input-group">
+                    <input type="email" placeholder="Your email address" class="email-input" />
+                    <a href="/intake" class="btn btn-accent">Make an Appointment</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-cards">
+            <div class="floating-card card-main">
+                <div class="card-header">Quick Assessment</div>
+                <div class="card-body">
+                    <p>What symptoms are you<br />experiencing today?</p>
+                </div>
+            </div>
+            <div class="floating-card card-small">
+                <div class="card-header">Profile</div>
+                <div class="card-body">
+                    <div class="avatar-row">
+                        <div class="avatar">JD</div>
+                        <div class="avatar">MK</div>
+                        <div class="avatar">AS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="why-section">
+        <h2>Why TriageAI?</h2>
+        <div class="features-grid">
+            <div class="feature-box">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h3>All Specialists</h3>
+                <p>AI trained on diverse medical conditions and symptoms for comprehensive triage.</p>
+            </div>
+            <div class="feature-box">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+                <h3>All Services</h3>
+                <p>Complete triage workflow from patient intake to risk assessment and recommendations.</p>
+            </div>
+            <div class="feature-box">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                </div>
+                <h3>Fast Results</h3>
+                <p>Get triage recommendations in seconds with our advanced ML algorithms.</p>
+            </div>
+            <div class="feature-box">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <h3>Secure & Private</h3>
+                <p>Your health data is protected with enterprise-grade security measures.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stat-card">
+            <span class="stat-value">95%</span>
+            <span class="stat-label">Accuracy Rate</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">&lt;5s</span>
+            <span class="stat-label">Assessment Time</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">@_totalPatients</span>
+            <span class="stat-label">Patients Helped</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">24/7</span>
+            <span class="stat-label">Available</span>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to Get Started?</h2>
+        <p>Begin your AI-powered triage assessment now.</p>
+        <a href="/intake" class="btn btn-white">Register Patient</a>
+    </section>
+</div>
+
+@code {
+    private int _totalPatients = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var patients = await PatientService.GetAllPatientsAsync();
+            _totalPatients = patients.Count();
+        }
+        catch { _totalPatients = 0; }
+    }
+}
+
+<style>
+    .home-page {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-12);
+    }
+
+    /* Hero */
+    .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-8);
+        align-items: center;
+        padding: var(--space-8) 0;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: var(--space-6);
+    }
+
+    .hero-desc {
+        font-size: 1.125rem;
+        color: var(--gray-600);
+        margin-bottom: var(--space-8);
+        line-height: 1.7;
+    }
+
+    .email-input-group {
+        display: flex;
+        gap: var(--space-3);
+        max-width: 500px;
+    }
+
+    .email-input {
+        flex: 1;
+        padding: var(--space-3) var(--space-4);
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+    }
+
+    .email-input:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    /* Floating Cards */
+    .hero-cards {
+        position: relative;
+        height: 350px;
+    }
+
+    .floating-card {
+        position: absolute;
+        background: var(--white);
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .floating-card .card-header {
+        background: var(--primary);
+        color: var(--white);
+        padding: var(--space-3) var(--space-4);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .floating-card .card-body {
+        padding: var(--space-4);
+    }
+
+    .card-main {
+        top: 20px;
+        left: 50px;
+        width: 280px;
+    }
+
+    .card-small {
+        bottom: 40px;
+        right: 30px;
+        width: 200px;
+    }
+
+    .avatar-row {
+        display: flex;
+        gap: var(--space-2);
+    }
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+        background: var(--accent);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* Why Section */
+    .why-section {
+        background: var(--primary);
+        color: var(--white);
+        padding: var(--space-12) var(--space-8);
+        border-radius: var(--radius-xl);
+        margin: 0 calc(var(--space-6) * -1);
+    }
+
+    .why-section h2 {
+        color: var(--white);
+        text-align: center;
+        margin-bottom: var(--space-8);
+        font-size: 2rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-6);
+    }
+
+    .feature-box {
+        background: rgba(255,255,255,0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+    }
+
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--white);
+        color: var(--primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--space-4);
+    }
+
+    .feature-box h3 {
+        color: var(--white);
+        font-size: 1.125rem;
+        margin-bottom: var(--space-2);
+    }
+
+    .feature-box p {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Stats */
+    .stats-section {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-6);
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+        text-align: center;
+    }
+
+    .stat-value {
+        display: block;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .stat-label {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+    }
+
+    /* CTA */
+    .cta-section {
+        background: var(--accent);
+        color: var(--white);
+        padding: var(--space-12);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        margin: 0 calc(var(--space-6) * -1);
+    }
+
+    .cta-section h2 {
+        color: var(--white);
+        margin-bottom: var(--space-2);
+    }
+
+    .cta-section p {
+        color: rgba(255,255,255,0.9);
+        margin-bottom: var(--space-6);
+    }
+
+    @@media (max-width: 1024px) {
+        .hero { grid-template-columns: 1fr; }
+        .hero-cards { display: none; }
+        .features-grid { grid-template-columns: repeat(2, 1fr); }
+        .stats-section { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @@media (max-width: 640px) {
+        .hero h1 { font-size: 2rem; }
+        .email-input-group { flex-direction: column; }
+        .features-grid { grid-template-columns: 1fr; }
+        .stats-section { grid-template-columns: 1fr; }
+    }
+</style>
